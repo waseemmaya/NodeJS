@@ -2,7 +2,7 @@ const express = require("express");
 const Joi = require("joi");
 const app = express();
 
-// app.use(express.json());
+app.use(express.json());
 
 const quizzes = [
   { name: "ReactJS", id: 1 },
@@ -10,13 +10,12 @@ const quizzes = [
   { name: "React Native", id: 3 }
 ];
 
-// POST: to create a resource
 // PUT: to update it
 // DELETE: to delete it
 
 // Read Root
 app.get("/", (req, res) => {
-  res.send("Working");
+  res.send("Quiz Api add /quizzes for viewing all available quizzes.");
 });
 
 // Read All Quizzes
@@ -27,8 +26,30 @@ app.get("/quizzes", (req, res) => {
 // Read Specific Quiz
 app.get("/quizzes/:id", (req, res) => {
   const quiz = quizzes.find(v => v.id === parseInt(req.params.id));
-  if (!quiz) return res.status(404).send("Quiz doesn't exist");
+  if (!quiz) return res.status(404).send("Quiz doesn't exist for view");
   res.send(quiz);
+});
+
+// Update Quiz Detail
+app.put("/quizzes/:id", (req, res) => {
+  const quiz = quizzes.find(v => v.id === parseInt(req.params.id));
+  if (!quiz) return res.status(404).send("Quiz doesn't exist for edit.");
+  quiz.name = req.body.name;
+  res.send(quiz);
+});
+
+// Delete Quiz
+app.delete("/quizzes/:id", (req, res) => {
+  const quiz = quizzes.find(v => v.id === parseInt(req.params.id));
+  if (!quiz)
+    return res.status(404).send("Selected quiz doesn't exist for deletion.");
+  const i = quizzes.indexOf(quiz);
+  console.log("index===>", i);
+
+  quizzes.splice(i, 1);
+  res.send(quiz);
+
+  // if (!quiz) return res.status(404).send("Quiz doesn't exist for delete.");
 });
 
 // Post new Quiz

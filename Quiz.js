@@ -4,19 +4,24 @@ const app = express();
 const helmet = require("helmet");
 const morgan = require("morgan");
 const config = require("config");
+const startupDebugger = require("debug")("app:startup");
+const dbDebugger = require("debug")("app:db");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(helmet());
 
+dbDebugger("db Connected");
+
 // Configuration
 console.log("Application Name: " + config.get("name"));
 console.log("Mail Server: " + config.get("mail.host"));
+console.log("Mail Password: " + config.get("mail.password"));
 
 if (app.get("env") === "development") {
   app.use(morgan("common"));
-  console.log("Morgan Enabled...");
+  startupDebugger("Morgan Enabled...");
 }
 
 const quizzes = [

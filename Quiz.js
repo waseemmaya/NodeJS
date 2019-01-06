@@ -1,8 +1,23 @@
 const express = require("express");
 const Joi = require("joi");
 const app = express();
+const helmet = require("helmet");
+const morgan = require("morgan");
+const config = require("config");
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
+app.use(helmet());
+
+// Configuration
+console.log("Application Name: " + config.get("name"));
+console.log("Mail Server: " + config.get("mail.host"));
+
+if (app.get("env") === "development") {
+  app.use(morgan("common"));
+  console.log("Morgan Enabled...");
+}
 
 const quizzes = [
   { name: "ReactJS", id: 1 },
@@ -10,8 +25,10 @@ const quizzes = [
   { name: "React Native", id: 3 }
 ];
 
-// PUT: to update it
-// DELETE: to delete it
+// set NODE_ENV=production
+// console.log(`NODE_ENV: ${process.env.NODE_ENV}`);  // by default undefined
+// const env = app.get('env');
+// console.log('env :', env);  // by dafault development
 
 // Read Root
 app.get("/", (req, res) => {
@@ -44,12 +61,8 @@ app.delete("/quizzes/:id", (req, res) => {
   if (!quiz)
     return res.status(404).send("Selected quiz doesn't exist for deletion.");
   const i = quizzes.indexOf(quiz);
-  console.log("index===>", i);
-
   quizzes.splice(i, 1);
   res.send(quiz);
-
-  // if (!quiz) return res.status(404).send("Quiz doesn't exist for delete.");
 });
 
 // Post new Quiz
